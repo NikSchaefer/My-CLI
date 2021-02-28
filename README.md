@@ -23,3 +23,13 @@ GLOBAL OPTIONS:
 --help, -h show help (default: false)
 
 specify host with `--host google.com`
+
+
+# Setting to Enviroment Variable
+
+1. Open windows start and search advanced windows settings. 
+2. Open enviroment Variables
+3. Open Path in System Variables and click Edit
+4. Set the Directory the exe file is in
+
+You can rename the exe fle to change the cmd prefix
