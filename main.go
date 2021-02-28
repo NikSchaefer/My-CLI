@@ -29,6 +29,10 @@ func main() {
 			Name:  "url",
 			Value: "",
 		},
+		&cli.StringFlag{
+			Name:  "addr",
+			Value: "",
+		},
 	}
 	app.Commands = []*cli.Command{
 		{
@@ -71,6 +75,16 @@ func main() {
 					return err
 				}
 				fmt.Println(cname)
+				return nil
+			},
+		},
+		{
+			Name:  "ping",
+			Usage: "Ping Address",
+			Flags: myFlags,
+			Action: func(c *cli.Context) error {
+
+				exec.Command("ping", c.String("addr"))
 				return nil
 			},
 		},
@@ -146,8 +160,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 }
+
 func openbrowser(url string) {
 	var err error
 
