@@ -23,7 +23,7 @@ func main() {
 	myFlags := []cli.Flag{
 		&cli.StringFlag{
 			Name:  "host",
-			Value: "tutorialedge.net",
+			Value: "nikschaefer.tech",
 		},
 		&cli.StringFlag{
 			Name:  "url",
