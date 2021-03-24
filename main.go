@@ -34,7 +34,7 @@ func main() {
 			Value: "",
 		},
 	}
-	app.Commands = []*cli.Command{
+	app.Commands = []cli.Command{
 		{
 			Name:  "ns",
 			Usage: "Looks up Nameservers",
