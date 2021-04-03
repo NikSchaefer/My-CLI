@@ -6,44 +6,48 @@ import (
 	"net"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"runtime"
 	"strings"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
 func main() {
 
-	userPath := "schaefer"
-
-	app := cli.NewApp()
-	app.Name = "My Personal CLI"
-	app.Usage = "Boosting Productivity and opening apps from the Command Line"
-
-	myFlags := []cli.Flag{
-		&cli.StringFlag{
-			Name:  "host",
-			Value: "nikschaefer.tech",
-		},
-		&cli.StringFlag{
-			Name:  "url",
-			Value: "",
-		},
-		&cli.StringFlag{
-			Name:  "addr",
-			Value: "",
-		},
+	app := &cli.App{
+		Name:  "My-Cli",
+		Usage: "General Commmands to enhance the terminal",
 	}
-	app.Commands = []cli.Command{
+
+	app.Commands = []*cli.Command{
+		{
+			Name:  "new",
+			Usage: "clone a new template, django, go, next",
+			Action: func(c *cli.Context) error {
+				arg := c.Args().First()
+				switch arg {
+				case "next":
+					cloneRepo("NikSchaefer/nextjs-boilerplate")
+					fmt.Println("Sucessfully Created")
+				case "django":
+					cloneRepo("NikSchaefer/Django-backend")
+					fmt.Println("Sucessfully Created")
+				case "go":
+					cloneRepo("NikSchaefer/go-fiber")
+					fmt.Println("Sucessfully Created")
+				default:
+					fmt.Println("Specify a template, (django, go, or next)")
+				}
+				return nil
+			},
+		},
 		{
 			Name:  "ns",
 			Usage: "Looks up Nameservers",
-			Flags: myFlags,
 			Action: func(c *cli.Context) error {
-				ns, err := net.LookupNS(c.String("host"))
-				if err != nil {
-					return err
-				}
+				ns, err := net.LookupNS(c.Args().First())
+				must(err)
 				for i := 0; i < len(ns); i++ {
 					fmt.Println(ns[i].Host)
 				}
@@ -52,10 +56,9 @@ func main() {
 		},
 		{
 			Name:  "ip",
-			Usage: "Looks up Nameservers",
-			Flags: myFlags,
+			Usage: "Looks up the specified ip address",
 			Action: func(c *cli.Context) error {
-				ip, err := net.LookupIP(c.String("host"))
+				ip, err := net.LookupIP(c.Args().First())
 				if err != nil {
 					return err
 				}
@@ -67,36 +70,20 @@ func main() {
 		},
 		{
 			Name:  "cname",
-			Usage: "Looks up CNAME for a host",
-			Flags: myFlags,
+			Usage: "Looks up CNAME for a given host",
 			Action: func(c *cli.Context) error {
-				cname, err := net.LookupCNAME(c.String("host"))
-				if err != nil {
-					return err
-				}
+				cname, err := net.LookupCNAME(c.Args().First())
+				must(err)
 				fmt.Println(cname)
-				return nil
-			},
-		},
-		{
-			Name:  "ping",
-			Usage: "Ping Address",
-			Flags: myFlags,
-			Action: func(c *cli.Context) error {
-
-				exec.Command("ping", c.String("addr"))
 				return nil
 			},
 		},
 		{
 			Name:  "mx",
 			Usage: "Looks up MX records for a host",
-			Flags: myFlags,
 			Action: func(c *cli.Context) error {
 				mx, err := net.LookupMX(c.String("host"))
-				if err != nil {
-					return err
-				}
+				must(err)
 				for i := 0; i < len(mx); i++ {
 					fmt.Println(mx[i])
 				}
@@ -105,8 +92,7 @@ func main() {
 		},
 		{
 			Name:  "host",
-			Usage: "Looks up a hosts addresses",
-			Flags: myFlags,
+			Usage: "Looks up a specified hosts addresses",
 			Action: func(c *cli.Context) error {
 				hosts, err := net.LookupHost(c.String("host"))
 				if err != nil {
@@ -120,10 +106,9 @@ func main() {
 		},
 		{
 			Name:  "browser",
-			Usage: "Opens Chrome",
-			Flags: myFlags,
+			Usage: "Opens Chrome to the url if specified",
 			Action: func(c *cli.Context) error {
-				url := c.String("url")
+				url := c.Args().First()
 				if url == "" {
 					openbrowser(" ")
 				}
@@ -136,11 +121,10 @@ func main() {
 			},
 		},
 		{
-			Name:  "dis",
+			Name:  "discord",
 			Usage: "Opens Discord",
-			Flags: myFlags,
 			Action: func(c *cli.Context) error {
-				path := fmt.Sprintf("C:\\Users\\%s\\AppData\\Local\\Discord\\Update.exe", userPath)
+				path := fmt.Sprintf("C:\\Users\\%s\\AppData\\Local\\Discord\\Update.exe", os.Getenv("USERPROFILE"))
 				exec.Command(path, "--processStart", "Discord.exe").Output()
 				return nil
 			},
@@ -148,18 +132,16 @@ func main() {
 		{
 			Name:  "spotify",
 			Usage: "Opens Spoitfy",
-			Flags: myFlags,
 			Action: func(c *cli.Context) error {
-				path := fmt.Sprintf("C:\\Users\\%s\\AppData\\Roaming\\Spotify\\Spotify.exe", userPath)
-				exec.Command(path).Output()
+				path := fmt.Sprintf("C:\\Users\\%s\\AppData\\Roaming\\Spotify\\Spotify.exe", os.Getenv("USERPROFILE"))
+				_, err := exec.Command(path).Output()
+				must(err)
 				return nil
 			},
 		},
 	}
-	err := app.Run((os.Args))
-	if err != nil {
-		log.Fatal(err)
-	}
+	err := app.Run(os.Args)
+	must(err)
 }
 
 func openbrowser(url string) {
@@ -178,5 +160,46 @@ func openbrowser(url string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+func must(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+func RemoveContents(dir string) error {
+	d, err := os.Open(dir)
+	if err != nil {
+		return err
+	}
+	defer d.Close()
+	names, err := d.Readdirnames(-1)
+	if err != nil {
+		return err
+	}
+	for _, name := range names {
+		err = os.RemoveAll(filepath.Join(dir, name))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
 
+func cloneRepo(repo string) error {
+	url := fmt.Sprintf("https://github.com/%s", repo)
+	name := strings.Split(repo, "/")[1]
+	_, err := exec.Command("git", "clone", url).Output()
+	if err != nil {
+		log.Fatal("Folder already exists")
+	}
+	git := fmt.Sprintf("./%s/.git", name)
+	err = RemoveContents(git)
+	must(err)
+	err = os.Remove(git)
+	must(err)
+	fmt.Println("Sucessfully Created Boilerplate at")
+	wd, _ := os.Getwd()
+	fmt.Printf("%s\nextjs-boilerplate", wd)
+
+	return nil
 }
