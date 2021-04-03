@@ -186,6 +186,7 @@ func removeDir(dir string) error {
 }
 
 func cloneRepo(repo string) error {
+	fmt.Println("Cloning...")
 	url := fmt.Sprintf("https://github.com/%s", repo)
 	name := strings.Split(repo, "/")[1]
 	_, err := exec.Command("git", "clone", url).Output()
