@@ -166,7 +166,7 @@ func must(err error) {
 		log.Fatal(err)
 	}
 }
-func RemoveContents(dir string) error {
+func removeDir(dir string) error {
 	d, err := os.Open(dir)
 	if err != nil {
 		return err
@@ -193,13 +193,9 @@ func cloneRepo(repo string) error {
 		log.Fatal("Folder already exists")
 	}
 	git := fmt.Sprintf("./%s/.git", name)
-	err = RemoveContents(git)
+	err = removeDir(git)
 	must(err)
 	err = os.Remove(git)
 	must(err)
-	fmt.Println("Sucessfully Created Boilerplate at")
-	wd, _ := os.Getwd()
-	fmt.Printf("%s\nextjs-boilerplate", wd)
-
 	return nil
 }

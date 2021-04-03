@@ -3,27 +3,25 @@
 Built to handle Networking Tasks along with Opening applications from the command line
 
 NAME:
-My Personal CLI - Boosting Productivity and opening apps from the Command Line
+   My-Cli - General Commmands to enhance the terminal
 
 USAGE:
-cli.exe [global options] command [command options] [arguments...]
+   my-cli.exe [global options] command [command options] [arguments...]
 
 COMMANDS:
-`ns` Looks up Nameservers for a host
-`ip ` Looks up Nameservers for a host
-`cname ` Looks up CNAME for a host
-`mx ` Looks up MX records for a host
-`host ` Looks up a hosts addresses
-`browser ` Opens Chrome
-`dis ` Opens Discord
-`spotify ` Opens Spoitfy
-`help, h ` Shows a list of commands or help for one command
+   `new    `  clone a new template, django, go, next
+   `ns     `  Looks up Nameservers
+   `ip     `  Looks up the specified ip address
+   `cname  `  Looks up CNAME for a given host
+   `mx     `  Looks up MX records for a host
+   `host   `  Looks up a specified hosts addresses
+   `browser`  Opens Chrome to the url if specified
+   `discord`  Opens Discord
+   `spotify`  Opens Spoitfy
+   `help, h`  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
---help, -h show help (default: false)
-
-specify host with `--host google.com`
-
+   --help, -h  show help (default: false)
 
 # Setting to Enviroment Variable
 
